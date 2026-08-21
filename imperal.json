@@ -4575,12 +4575,33 @@
       "tree": {},
       "icon": "",
       "refresh": "manual",
-      "center_overlay": false
+      "center_overlay": false,
+      "default_width": 320,
+      "min_width": 260,
+      "max_width": 420
+    },
+    {
+      "panel_id": "iguana_center",
+      "slot": "center",
+      "title": "Iguana",
+      "tree": {},
+      "icon": "🦎",
+      "refresh": "manual",
+      "center_overlay": true
     },
     {
       "panel_id": "iguana_settings",
       "slot": "center",
       "title": "Iguana -- App settings",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "iguana_help",
+      "slot": "center",
+      "title": "About Iguana Connector",
       "tree": {},
       "icon": "",
       "refresh": "manual",

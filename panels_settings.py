@@ -6,10 +6,10 @@ Connector's / MuleSoft Connector's panels_settings.py.
 Per ~/UI_INTERFACE_STANDARD.md: the left sidebar never wraps the connect
 form in a Card, and disconnect (never exposed in the sidebar itself) lives
 here, one row per connected instance/login. The one secondary "App
-settings" button sits LAST at the bottom of the sidebar. The button's help
-modal (opened from this screen) is the ONLY place carrying the
-generation-mismatch warning (Iguana 6 vs IguanaX) -- the sidebar never
-repeats it.
+settings" button sits LAST at the bottom of the sidebar. The help modal
+(its own separate panel, opened from this screen) is the ONLY place
+carrying the generation-mismatch warning (Iguana 6 vs IguanaX) -- the
+sidebar never repeats it.
 """
 from __future__ import annotations
 
@@ -71,12 +71,29 @@ def _licenses_section(connections: list[dict]) -> ui.UINode:
     return ui.Stack(direction="v", gap=2, children=children)
 
 
-def _help_modal_content() -> ui.UINode:
+@ext.panel("iguana_settings", slot="center", title="Iguana -- App settings", center_overlay=True)
+async def iguana_settings_panel(ctx, **kwargs) -> ui.UINode:
+    connections = await h._load_connections(ctx)
+    license_connections = await h._load_license_connections(ctx)
+    return ui.Stack(direction="v", gap=4, align="stretch", children=[
+        ui.Header(text="App settings", level=2, subtitle="Iguana Connector"),
+        _instances_section(connections),
+        ui.Divider(),
+        _licenses_section(license_connections),
+        ui.Divider(),
+        ui.Button(
+            "About this connector", variant="ghost", size="sm",
+            on_click=ui.Call("__panel__iguana_help"),
+        ),
+    ])
+
+
+@ext.panel("iguana_help", slot="center", title="About Iguana Connector", center_overlay=True)
+async def iguana_help_panel(ctx, **kwargs) -> ui.UINode:
     """The one place carrying the generation-mismatch and scope warnings --
     never duplicated in the sidebar. See PREPARATION.md section 1 for the
     full citation trail behind this text."""
-    return ui.Stack(direction="v", gap=2, align="start", children=[
-        ui.Text("About this connector", variant="heading"),
+    content = ui.Stack(direction="v", gap=3, children=[
         ui.Text(
             "This connector talks to the Iguana 6 HTTP API -- the fully "
             "documented, stable management surface for self-hosted Iguana "
@@ -84,31 +101,29 @@ def _help_modal_content() -> ui.UINode:
             "on the newer IguanaX runtime do not expose an equivalent "
             "public REST API for external management, per iNTERFACEWARE's "
             "own IguanaX documentation -- if your instance is IguanaX-only, "
-            "the Channel API calls here will not work against it.",
-            variant="body",
+            "the Channel API calls here will not work against it."
         ),
+        ui.Divider(),
         ui.Text(
             "Your administrator username and password are sent as HTTP "
             "Basic Auth on every call, exactly as Iguana's own API expects "
-            "-- there is no separate login step. The licensing portal login "
-            "(my.interfaceware.com) is a separate, optional credential pair "
-            "used only for license API calls.",
-            variant="body",
+            "-- there is no separate login step."
+        ),
+        ui.Divider(),
+        ui.Text(
+            "The licensing portal login (my.interfaceware.com) is a "
+            "separate, optional credential pair used only for license API "
+            "calls -- you do not need it to manage channels."
+        ),
+        ui.Divider(),
+        ui.Link(
+            label="Open iNTERFACEWARE's official Iguana 6 HTTP API reference",
+            href="https://help.interfaceware.com/v6/http-api-reference",
         ),
     ])
-
-
-@ext.panel("iguana_settings", slot="center", title="Iguana -- App settings", center_overlay=True)
-async def iguana_settings_panel(ctx, **kwargs) -> ui.UINode:
-    connections = await h._load_connections(ctx)
-    license_connections = await h._load_license_connections(ctx)
-    return ui.Stack(direction="v", gap=3, align="stretch", width="100%", children=[
-        _instances_section(connections),
-        ui.Divider(),
-        _licenses_section(license_connections),
-        ui.Divider(),
-        ui.Button(
-            "About this connector", variant="ghost", size="sm",
-            on_click=ui.OpenModal(_help_modal_content()),
-        ),
-    ])
+    return ui.Dialog(
+        title="About this connector",
+        content=content,
+        confirm_label="",
+        cancel_label="Close",
+    )
