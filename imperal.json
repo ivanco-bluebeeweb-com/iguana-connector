@@ -1,0 +1,4637 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.9.12",
+  "app_id": "iguana-connector",
+  "version": "0.1.0",
+  "name": "Iguana",
+  "description": "Connect your own self-hosted Iguana (iNTERFACEWARE) instance to manage channels from Imperal -- status/start/stop/start-all/stop-all, full channel configuration (add/update/remove, get/get-default config), Translator project export/import and milestones, server log queries, server configuration and performance stats, plus your my.interfaceware.com license entitlements (list/activate/check/transfer, and applying a license key to your instance). Your admin credentials are verified against your own instance before they're saved. Scoped to the fully-documented Iguana 6 HTTP API surface -- see this app's own settings screen for the IguanaX compatibility note.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "iguana:read",
+    "iguana:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_iguana",
+      "description": "Connect your Iguana instance by saving its base URL plus an administrator username/password, after checking they actually work together.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.provider.connected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "base_url": {
+            "default": "",
+            "description": "Base URL of your Iguana instance, e.g. https://your-server.example.com:6543",
+            "title": "Base Url",
+            "type": "string"
+          },
+          "username": {
+            "default": "",
+            "description": "Iguana administrator username for this instance.",
+            "title": "Username",
+            "type": "string"
+          },
+          "password": {
+            "default": "",
+            "description": "Iguana administrator password for this instance.",
+            "title": "Password",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "description": "Optional friendly name for this instance connection.",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "title": "ConnectIguanaParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connected": {
+            "default": false,
+            "title": "Connected",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          },
+          "base_url": {
+            "default": "",
+            "title": "Base Url",
+            "type": "string"
+          }
+        },
+        "title": "ProviderConnection",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.connect_iguana",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "disconnect_iguana",
+      "description": "Disconnect an Iguana instance: deletes the saved base URL/credentials. Nothing on the Iguana server itself is changed.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.provider.disconnected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the connection to disconnect.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "DisconnectIguanaParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.disconnect_iguana",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected Iguana instances.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "description": "Explicit empty params model -- V17 disallows untyped handlers.",
+        "properties": {},
+        "title": "NoParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ProviderConnection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "connected": {
+                "default": false,
+                "title": "Connected",
+                "type": "boolean"
+              },
+              "detail": {
+                "default": "",
+                "title": "Detail",
+                "type": "string"
+              },
+              "base_url": {
+                "default": "",
+                "title": "Base Url",
+                "type": "string"
+              }
+            },
+            "title": "ProviderConnection",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connections": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ProviderConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ProviderConnectionList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "connect_license_portal",
+      "description": "Connect your my.interfaceware.com licensing portal login (separate from your Iguana instance connection), after checking it actually works.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.license_portal.connected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "license_username": {
+            "default": "",
+            "description": "Your my.interfaceware.com licensing portal username.",
+            "title": "License Username",
+            "type": "string"
+          },
+          "license_password": {
+            "default": "",
+            "description": "Your my.interfaceware.com licensing portal password.",
+            "title": "License Password",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "description": "Optional friendly name for this licensing portal login.",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "title": "ConnectLicensePortalParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connected": {
+            "default": false,
+            "title": "Connected",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "title": "LicensePortalConnection",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.connect_license_portal",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "disconnect_license_portal",
+      "description": "Disconnect a licensing portal login: deletes the saved credentials. Nothing on my.interfaceware.com itself is changed.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.license_portal.disconnected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the licensing portal connection to remove.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "DisconnectLicensePortalParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.disconnect_license_portal",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "list_license_connections",
+      "description": "List the connected Iguana licensing portal logins.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "description": "Explicit empty params model -- V17 disallows untyped handlers.",
+        "properties": {},
+        "title": "NoParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "LicensePortalConnection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "connected": {
+                "default": false,
+                "title": "Connected",
+                "type": "boolean"
+              },
+              "detail": {
+                "default": "",
+                "title": "Detail",
+                "type": "string"
+              }
+            },
+            "title": "LicensePortalConnection",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connections": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/LicensePortalConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LicensePortalConnectionList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "list_licenses",
+      "description": "List the Iguana license entitlements available on your connected my.interfaceware.com account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the licensing portal connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListLicensesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "LicenseEntry": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "entitlement_id": {
+                "default": "",
+                "title": "Entitlement Id",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "LicenseEntry",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "licenses": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/LicenseEntry"
+            },
+            "title": "Licenses",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LicenseList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "get_instance_license_detail",
+      "description": "Read the license detail (instance id and current license status) of your connected Iguana instance -- needed before activating a license against it.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "GetInstanceLicenseDetailParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instance_id": {
+            "default": "",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "InstanceLicenseDetail",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "activate_license",
+      "description": "Activate a license entitlement from your my.interfaceware.com account against a specific Iguana instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.license.activated"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the licensing portal connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "entitlement_id": {
+            "default": "",
+            "description": "The entitlement ID of the license to activate, from list_licenses.",
+            "title": "Entitlement Id",
+            "type": "string"
+          },
+          "instance_id": {
+            "default": "",
+            "description": "The target Iguana instance ID, from get_instance_license_detail.",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "description": "A description to pair with this activation, e.g. 'production' or 'testing'.",
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "title": "ActivateLicenseParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "activation_id": {
+            "default": "",
+            "title": "Activation Id",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LicenseActivationResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.activate_license",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "check_license_activation",
+      "description": "Check the activation status of a license entitlement on your my.interfaceware.com account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the licensing portal connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "entitlement_id": {
+            "default": "",
+            "description": "The entitlement ID to check activation status for.",
+            "title": "Entitlement Id",
+            "type": "string"
+          }
+        },
+        "title": "CheckLicenseActivationParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "activation_id": {
+            "default": "",
+            "title": "Activation Id",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LicenseActivationResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "transfer_license",
+      "description": "Transfer an existing license activation from one Iguana instance to another, after explicit confirmation -- frees the license from an instance that is no longer being used.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.license.transferred"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the licensing portal connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "activation_id": {
+            "default": "",
+            "description": "The activation ID of the license to transfer from.",
+            "title": "Activation Id",
+            "type": "string"
+          },
+          "instance_id": {
+            "default": "",
+            "description": "The target Iguana instance ID to transfer the license to.",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "description": "A description to pair with this transfer.",
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "title": "TransferLicenseParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "activation_id": {
+            "default": "",
+            "title": "Activation Id",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LicenseActivationResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.transfer_license",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "apply_instance_license",
+      "description": "Apply a license key directly to your connected Iguana instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.license.applied"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "key": {
+            "default": "",
+            "description": "The license key to apply to this Iguana instance.",
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "title": "ApplyInstanceLicenseParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instance_id": {
+            "default": "",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "InstanceLicenseDetail",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.apply_instance_license",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "get_server_status",
+      "description": "Read the connected Iguana server's own status report -- server info plus every channel's current status (running/stopped).",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "GetServerStatusParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ChannelInfo": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "guid": {
+                "default": "",
+                "title": "Guid",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "ChannelInfo",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "number_of_channels": {
+            "default": 0,
+            "title": "Number Of Channels",
+            "type": "integer"
+          },
+          "channels": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ChannelInfo"
+            },
+            "title": "Channels",
+            "type": "array"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ServerStatus",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "start_channel",
+      "description": "Start a channel on the connected Iguana instance by name or guid.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.channel.started"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "description": "Channel name (use this OR guid, guid is preferred and stable across renames).",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "description": "Channel GUID (preferred -- does not change when a channel is renamed).",
+            "title": "Guid",
+            "type": "string"
+          }
+        },
+        "title": "StartChannelParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": "",
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ChannelInfo",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.start_channel",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "stop_channel",
+      "description": "Stop a channel on the connected Iguana instance by name or guid.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.channel.stopped"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "description": "Channel name (use this OR guid, guid is preferred and stable across renames).",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "description": "Channel GUID (preferred -- does not change when a channel is renamed).",
+            "title": "Guid",
+            "type": "string"
+          }
+        },
+        "title": "StopChannelParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": "",
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ChannelInfo",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.stop_channel",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "start_all_channels",
+      "description": "Start every channel on the connected Iguana instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.channels.started_all"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "StartAllChannelsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ChannelInfo": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "guid": {
+                "default": "",
+                "title": "Guid",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "ChannelInfo",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "number_of_channels": {
+            "default": 0,
+            "title": "Number Of Channels",
+            "type": "integer"
+          },
+          "channels": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ChannelInfo"
+            },
+            "title": "Channels",
+            "type": "array"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ServerStatus",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.start_all_channels",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "stop_all_channels",
+      "description": "Stop every channel on the connected Iguana instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.channels.stopped_all"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "StopAllChannelsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ChannelInfo": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "guid": {
+                "default": "",
+                "title": "Guid",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "ChannelInfo",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "number_of_channels": {
+            "default": 0,
+            "title": "Number Of Channels",
+            "type": "integer"
+          },
+          "channels": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ChannelInfo"
+            },
+            "title": "Channels",
+            "type": "array"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ServerStatus",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.stop_all_channels",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "get_current_version",
+      "description": "Read the connected Iguana server's own version information.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "GetCurrentVersionParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "major": {
+            "default": 0,
+            "title": "Major",
+            "type": "integer"
+          },
+          "minor": {
+            "default": 0,
+            "title": "Minor",
+            "type": "integer"
+          },
+          "build": {
+            "default": 0,
+            "title": "Build",
+            "type": "integer"
+          },
+          "build_ext": {
+            "default": "",
+            "title": "Build Ext",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "VersionInfo",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "get_server_salt",
+      "description": "Read the encryption salt used by the connected Iguana server -- needed to encrypt source/destination passwords before sending them in add_channel/update_channel calls.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "GetServerSaltParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "salt": {
+            "default": "",
+            "title": "Salt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ServerSalt",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "get_channel_config",
+      "description": "Read the full configuration of an existing channel (serialized as XML), by name or guid -- use this to clone/inspect a channel before update_channel.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "description": "Channel name (use this OR guid, guid is preferred and stable across renames).",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "description": "Channel GUID (preferred -- does not change when a channel is renamed).",
+            "title": "Guid",
+            "type": "string"
+          },
+          "compact": {
+            "default": true,
+            "description": "Return XML in compact format.",
+            "title": "Compact",
+            "type": "boolean"
+          }
+        },
+        "title": "GetChannelConfigParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "config_xml": {
+            "default": "",
+            "title": "Config Xml",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ChannelConfig",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "get_default_config",
+      "description": "Read the default channel configuration for a given source and destination component type pair -- the starting point for building a new channel with add_channel.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "source": {
+            "default": "",
+            "description": "Source component type: LLP Listener, From Database, From File, From Plugin, From HTTPS, From Channel, or From Translator.",
+            "title": "Source",
+            "type": "string"
+          },
+          "destination": {
+            "default": "",
+            "description": "Destination component type: LLP Client, To Database, To File, To Plugin, To HTTPS, To Channel, or To Translator.",
+            "title": "Destination",
+            "type": "string"
+          },
+          "compact": {
+            "default": true,
+            "description": "Return XML in compact format.",
+            "title": "Compact",
+            "type": "boolean"
+          }
+        },
+        "title": "GetDefaultConfigParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "config_xml": {
+            "default": "",
+            "title": "Config Xml",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ChannelConfig",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "add_channel",
+      "description": "Add a new channel to the connected Iguana server from a channel configuration (as XML, e.g. from get_default_config or get_channel_config). Requires administrator privileges. The channel name inside the config must be unique.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.channel.created"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "config": {
+            "default": "",
+            "description": "Full channel configuration XML, e.g. from get_default_config or get_channel_config.",
+            "title": "Config",
+            "type": "string"
+          },
+          "compact": {
+            "default": true,
+            "description": "Return XML in compact format.",
+            "title": "Compact",
+            "type": "boolean"
+          },
+          "source_password": {
+            "default": "",
+            "description": "Password for the source component (From File/From Database channels only).",
+            "title": "Source Password",
+            "type": "string"
+          },
+          "destination_password": {
+            "default": "",
+            "description": "Password for the destination component (To File/To Database channels only).",
+            "title": "Destination Password",
+            "type": "string"
+          },
+          "salt": {
+            "default": "",
+            "description": "Encryption salt from get_server_salt -- needed when cloning a channel between different servers.",
+            "title": "Salt",
+            "type": "string"
+          }
+        },
+        "title": "AddChannelParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": "",
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ChannelInfo",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.add_channel",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "update_channel",
+      "description": "Update the configuration of an existing channel (as XML). Requires administrator privileges.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.channel.updated"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "config": {
+            "default": "",
+            "description": "Updated channel configuration XML. The channel must be stopped first.",
+            "title": "Config",
+            "type": "string"
+          },
+          "compact": {
+            "default": true,
+            "description": "Return XML in compact format.",
+            "title": "Compact",
+            "type": "boolean"
+          },
+          "source_password": {
+            "default": "",
+            "description": "Password for the source component (From File/From Database channels only).",
+            "title": "Source Password",
+            "type": "string"
+          },
+          "destination_password": {
+            "default": "",
+            "description": "Password for the destination component (To File/To Database channels only).",
+            "title": "Destination Password",
+            "type": "string"
+          }
+        },
+        "title": "UpdateChannelParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": "",
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ChannelInfo",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.update_channel",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "remove_channel",
+      "description": "Permanently remove a channel from the connected Iguana server, by name or guid. Requires administrator privileges. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.channel.removed"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "description": "Channel name (use this OR guid, guid is preferred and stable across renames).",
+            "title": "Name",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "description": "Channel GUID (preferred -- does not change when a channel is renamed).",
+            "title": "Guid",
+            "type": "string"
+          },
+          "compact": {
+            "default": true,
+            "description": "Return XML in compact format.",
+            "title": "Compact",
+            "type": "boolean"
+          }
+        },
+        "title": "RemoveChannelParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.remove_channel",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "export_project",
+      "description": "Export a Translator project (the channel's mapping code) as a zip file, base64-encoded, by project guid.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "description": "Component GUID of the Translator to export (from_mapper/to_mapper guid, not the channel guid).",
+            "title": "Guid",
+            "type": "string"
+          },
+          "milestone_name": {
+            "default": "",
+            "description": "Name of the milestone to export. Defaults to the project's most recent milestone.",
+            "title": "Milestone Name",
+            "type": "string"
+          },
+          "sample_data": {
+            "default": true,
+            "description": "Include sample data in the exported project.",
+            "title": "Sample Data",
+            "type": "boolean"
+          }
+        },
+        "title": "ExportProjectParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "zip_base64": {
+            "default": "",
+            "title": "Zip Base64",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ProjectExport",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "import_project",
+      "description": "Import a Translator project (base64-encoded zip, e.g. from export_project) into an existing channel by project guid.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.project.imported"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "description": "Component GUID of the Translator to import into.",
+            "title": "Guid",
+            "type": "string"
+          },
+          "project_base64": {
+            "default": "",
+            "description": "Base64-encoded project zip file contents (matching export_project's output).",
+            "title": "Project Base64",
+            "type": "string"
+          },
+          "sample_data": {
+            "default": "",
+            "description": "One of 'append', 'replace', or empty to exclude sample data.",
+            "title": "Sample Data",
+            "type": "string"
+          }
+        },
+        "title": "ImportProjectParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "imported": {
+            "default": false,
+            "title": "Imported",
+            "type": "boolean"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ImportProjectResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.import_project",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "save_project_milestone",
+      "description": "Save a named milestone (version snapshot) for a Translator project, by project guid.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "iguana.project.milestone_saved"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "guid": {
+            "default": "",
+            "description": "Component GUID of the Translator project.",
+            "title": "Guid",
+            "type": "string"
+          },
+          "milestone_name": {
+            "default": "",
+            "description": "Name for the new milestone.",
+            "title": "Milestone Name",
+            "type": "string"
+          }
+        },
+        "title": "SaveProjectMilestoneParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "guid": {
+            "default": "",
+            "title": "Guid",
+            "type": "string"
+          },
+          "milestone_name": {
+            "default": "",
+            "title": "Milestone Name",
+            "type": "string"
+          },
+          "saved": {
+            "default": false,
+            "title": "Saved",
+            "type": "boolean"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "MilestoneResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "iguana-connector.save_project_milestone",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "query_logs",
+      "description": "Query the connected Iguana server's own log messages, optionally filtered by date range, channel, message type, or free-text filter.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "after": {
+            "default": "",
+            "description": "Only messages after this date, format yyyy/mm/dd hh:mm:ss.",
+            "title": "After",
+            "type": "string"
+          },
+          "before": {
+            "default": "",
+            "description": "Only messages before this date, format yyyy/mm/dd hh:mm:ss.",
+            "title": "Before",
+            "type": "string"
+          },
+          "debugmode": {
+            "default": false,
+            "description": "Include system debug messages.",
+            "title": "Debugmode",
+            "type": "boolean"
+          },
+          "deleted": {
+            "default": "",
+            "description": "'true' to select only deleted messages, 'false' to exclude them, empty for both.",
+            "title": "Deleted",
+            "type": "string"
+          },
+          "filter": {
+            "default": "",
+            "description": "Only messages containing this text.",
+            "title": "Filter",
+            "type": "string"
+          },
+          "includesourcelogs": {
+            "default": false,
+            "description": "Include messages from source channels feeding this channel.",
+            "title": "Includesourcelogs",
+            "type": "boolean"
+          },
+          "refmsgid": {
+            "default": "",
+            "description": "Return only the message with this unique log message ID.",
+            "title": "Refmsgid",
+            "type": "string"
+          },
+          "source": {
+            "default": "",
+            "description": "Only messages from this channel name.",
+            "title": "Source",
+            "type": "string"
+          },
+          "type": {
+            "default": "",
+            "description": "Comma-separated message types: messages, ack_messages, errors, errors_marked, errors_unmarked, info, debug, warnings, successes, resubmitted.",
+            "title": "Type",
+            "type": "string"
+          },
+          "limit": {
+            "default": 0,
+            "description": "Maximum number of log entries to return (0 = no limit specified).",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "QueryLogsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "LogEntry": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "message_id": {
+                "default": "",
+                "title": "Message Id",
+                "type": "string"
+              },
+              "channel": {
+                "default": "",
+                "title": "Channel",
+                "type": "string"
+              },
+              "type": {
+                "default": "",
+                "title": "Type",
+                "type": "string"
+              },
+              "timestamp": {
+                "default": "",
+                "title": "Timestamp",
+                "type": "string"
+              },
+              "text": {
+                "default": "",
+                "title": "Text",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "LogEntry",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "entries": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/LogEntry"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "raw_xml": {
+            "default": "",
+            "title": "Raw Xml",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LogQueryResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "get_server_config",
+      "description": "Read the connected Iguana server's own configuration information (server-wide settings, not one channel's config).",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "GetServerConfigParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "raw_xml": {
+            "default": "",
+            "title": "Raw Xml",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ServerConfig",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "get_performance_stats",
+      "description": "Read the connected Iguana server's own performance statistics (monitor_query) -- throughput/latency data for the server and its channels.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "GetPerformanceStatsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "raw_xml": {
+            "default": "",
+            "title": "Raw Xml",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "PerformanceStats",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    },
+    {
+      "name": "audit_iguana_instance",
+      "description": "Build one aggregated health report for the connected Iguana instance: server version, total channel count, and how many channels are stopped (a channel that should be running but isn't is the single most common Iguana operational problem).",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "ID of the Iguana connection to use (leave empty to use the only/most recent one).",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "AuditInstanceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "version": {
+            "default": "",
+            "title": "Version",
+            "type": "string"
+          },
+          "total_channels": {
+            "default": 0,
+            "title": "Total Channels",
+            "type": "integer"
+          },
+          "stopped_channels": {
+            "default": 0,
+            "title": "Stopped Channels",
+            "type": "integer"
+          },
+          "stopped_channel_names": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Stopped Channel Names",
+            "type": "array"
+          },
+          "running_channels": {
+            "default": 0,
+            "title": "Running Channels",
+            "type": "integer"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "IguanaAuditReport",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "iguana-connector"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 337,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
+  "secrets": [
+    {
+      "name": "iguana_connections",
+      "description": "Your connected Iguana instances -- stored as a JSON array, one entry per instance, each with its own base_url, administrator username, password, and an optional friendly label. Managed through connect_iguana / disconnect_iguana -- you should not need to edit this directly.",
+      "required": true,
+      "write_mode": "both",
+      "max_bytes": 65536,
+      "scope": "user",
+      "rotation_hint_days": 180
+    },
+    {
+      "name": "iguana_license_connections",
+      "description": "Your saved my.interfaceware.com licensing portal logins -- stored as a JSON array, one entry per login, each with its own username, password, and an optional friendly label. Managed through connect_license_portal / disconnect_license_portal -- you should not need to edit this directly.",
+      "required": false,
+      "write_mode": "both",
+      "max_bytes": 65536,
+      "scope": "user",
+      "rotation_hint_days": 180
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "secrets",
+      "slot": "right",
+      "title": "Secrets",
+      "tree": {},
+      "icon": "KeyRound",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "iguana_connect",
+      "slot": "left",
+      "title": "Iguana",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "iguana_settings",
+      "slot": "center",
+      "title": "Iguana -- App settings",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    }
+  ],
+  "pricing": {
+    "model": "per_action",
+    "currency": "tokens",
+    "monthly_price": 0,
+    "free_tools": [
+      "connect_iguana",
+      "disconnect_iguana",
+      "list_connections",
+      "connect_license_portal",
+      "disconnect_license_portal",
+      "list_license_connections"
+    ],
+    "tool_prices": {
+      "connect_iguana": 0,
+      "disconnect_iguana": 0,
+      "list_connections": 0,
+      "connect_license_portal": 0,
+      "disconnect_license_portal": 0,
+      "list_license_connections": 0,
+      "list_licenses": 8,
+      "get_instance_license_detail": 8,
+      "check_license_activation": 8,
+      "get_server_status": 8,
+      "get_current_version": 8,
+      "get_server_salt": 8,
+      "get_channel_config": 8,
+      "get_default_config": 8,
+      "export_project": 8,
+      "query_logs": 8,
+      "get_server_config": 8,
+      "get_performance_stats": 8,
+      "add_channel": 16,
+      "update_channel": 16,
+      "remove_channel": 16,
+      "save_project_milestone": 16,
+      "activate_license": 20,
+      "transfer_license": 20,
+      "apply_instance_license": 20,
+      "start_channel": 20,
+      "stop_channel": 20,
+      "import_project": 20,
+      "audit_iguana_instance": 40,
+      "start_all_channels": 60,
+      "stop_all_channels": 60
+    },
+    "notes": "Iguana instance and licensing-portal connect/disconnect/list-connections are free (local credential management, no third-party call charged). Plain reads against the connected instance or my.interfaceware.com are 8. Standard single-entity writes (channel create/update/remove, project milestone) are 16. Consequential single actions that change live running state or apply real licensing/import effects (license activate/transfer/apply, channel start/stop, project import) are 20. The aggregated audit report is 40. Start/stop-ALL-channels affects every channel on the instance in one call, same tier as a bulk action, so 60."
+  }
+}
