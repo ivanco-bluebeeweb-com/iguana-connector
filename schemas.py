@@ -24,6 +24,13 @@ class ConnectIguanaParams(BaseModel):
         "",
         description="Base URL of your Iguana instance, e.g. https://your-server.example.com:6543",
     )
+    allow_private_http: bool = Field(
+        False,
+        description=(
+            "Set true to allow a plain http:// base_url for a self-hosted "
+            "instance on localhost or a private network. HTTPS is required otherwise."
+        ),
+    )
     username: str = Field("", description="Iguana administrator username for this instance.")
     password: str = Field("", description="Iguana administrator password for this instance.")
     label: str = Field("", description="Optional friendly name for this instance connection.")

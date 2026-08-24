@@ -56,6 +56,8 @@ cause than "wrong credentials", so it must never be reported as such.
 from __future__ import annotations
 
 import base64
+import ipaddress
+from urllib.parse import urlparse
 
 
 class ProviderError(Exception):
@@ -67,6 +69,35 @@ class ProviderError(Exception):
         self.status_code = status_code
         self.detail = detail
         super().__init__(f"Iguana API error {status_code}: {detail}")
+
+
+def normalize_base_url(value: str, allow_private_http: bool = False) -> str:
+    """Validate a user-supplied self-hosted base_url before it is ever used in
+    a request (AUTH_AND_CREDENTIALS_STANDARD.md Part C / task #2368). Same
+    shape as Home Assistant Connector's home_assistant_client.normalize_base_url
+    -- requires HTTPS by default; HTTP is accepted only when the caller
+    explicitly opts in AND the host resolves to localhost or a private/
+    loopback address. Iguana's own docs sample `localhost:6543` as a valid
+    instance URL, so this still works for that documented case while a bare
+    unchecked base_url can't be pointed at an arbitrary internal host."""
+    raw = (value or "").strip().rstrip("/")
+    parsed = urlparse(raw)
+    if not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
+        raise ProviderError(400, "Iguana base URL must contain only a scheme, host and optional port/path.")
+    if parsed.scheme == "https":
+        return raw
+    if parsed.scheme != "http" or not allow_private_http:
+        raise ProviderError(400, "Use HTTPS, or explicitly allow HTTP for a private-network Iguana instance.")
+    host = parsed.hostname.lower()
+    if host == "localhost":
+        return raw
+    try:
+        address = ipaddress.ip_address(host)
+    except ValueError:
+        raise ProviderError(400, "HTTP is allowed only for localhost or a literal private IP address.")
+    if not (address.is_private or address.is_loopback):
+        raise ProviderError(400, "HTTP is allowed only for a private-network or localhost address.")
+    return raw
 
 
 def _auth_header(username: str, password: str) -> dict:

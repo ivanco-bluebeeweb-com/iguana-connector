@@ -114,7 +114,8 @@ def _no_license_connection() -> ActionResult:
 
 def _fail(exc: Exception) -> ActionResult:
     if isinstance(exc, ic.ProviderError):
-        return ActionResult.error(f"Iguana request failed ({exc.status_code}): {exc.detail}")
+        retryable = exc.status_code == 429 or exc.status_code >= 500
+        return ActionResult.error(f"Iguana request failed ({exc.status_code}): {exc.detail}", retryable=retryable)
     return ActionResult.error(f"Iguana request failed: {exc}")
 
 
@@ -135,11 +136,15 @@ def _fail(exc: Exception) -> ActionResult:
 )
 async def connect_iguana(ctx, params: ConnectIguanaParams) -> ActionResult:
     """Connect your Iguana instance by saving its base URL plus an administrator username/password."""
-    base_url = (params.base_url or "").strip().rstrip("/")
-    if not base_url:
+    raw_base_url = (params.base_url or "").strip().rstrip("/")
+    if not raw_base_url:
         return ActionResult.error("base_url is required, e.g. https://your-server.example.com:6543")
     if not params.username or not params.password:
         return ActionResult.error("username and password are both required.")
+    try:
+        base_url = ic.normalize_base_url(raw_base_url, params.allow_private_http)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc)
     try:
         version = await ic.current_version(ctx, base_url, params.username, params.password)
     except Exception as exc:  # noqa: BLE001
