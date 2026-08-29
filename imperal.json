@@ -1,6 +1,6 @@
 {
   "manifest_schema_version": 3,
-  "sdk_version": "5.9.12",
+  "sdk_version": "5.13.0",
   "app_id": "iguana-connector",
   "version": "0.1.0",
   "name": "Iguana",
@@ -29,6 +29,12 @@
             "description": "Base URL of your Iguana instance, e.g. https://your-server.example.com:6543",
             "title": "Base Url",
             "type": "string"
+          },
+          "allow_private_http": {
+            "default": false,
+            "description": "Set true to allow a plain http:// base_url for a self-hosted instance on localhost or a private network. HTTPS is required otherwise.",
+            "title": "Allow Private Http",
+            "type": "boolean"
           },
           "username": {
             "default": "",
