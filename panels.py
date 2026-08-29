@@ -116,6 +116,9 @@ async def iguana_connect_panel(ctx, **kwargs) -> ui.UINode:
         header,
         _connections_summary(connections, license_connections),
         ui.Divider(),
+        ui.Button("View instance audit", variant="primary", size="sm", full_width=True,
+                  icon="Activity", on_click=ui.Call("__panel__iguana_center")),
+        ui.Divider(),
         _instance_connect_form(),
         ui.Divider(),
         _license_connect_form(),
@@ -133,7 +136,28 @@ async def iguana_center_panel(ctx, **kwargs) -> ui.UINode:
     slot="center" panel is registered but the Panel app never fetches it
     at session-init without that flag. Text is the shared canonical
     wording -- must stay identical across every app in this situation."""
-    return ui.Empty(
-        message="Nothing to show here -- this app is managed entirely from the sidebar.",
-        icon="👈",
-    )
+    connections = await h._load_connections(ctx)
+    if not connections:
+        return ui.Empty(message="Connect an Iguana instance from the sidebar to see it here.", icon="🦎")
+
+    from schemas import AuditInstanceParams
+    connection_id = connections[0].get("id", "")
+    result = await h.audit_iguana_instance(ctx, AuditInstanceParams(connection_id=connection_id))
+    body: list[ui.UINode] = [ui.Text("Instance audit", variant="subtitle")]
+    if result.success and result.data:
+        r = result.data
+        body.append(ui.Stats(children=[
+            ui.Stat(label="Version", value=r.version or "—"),
+            ui.Stat(label="Total channels", value=str(r.total_channels)),
+            ui.Stat(label="Running", value=str(r.running_channels)),
+            ui.Stat(label="Stopped", value=str(r.stopped_channels)),
+        ]))
+        for name in r.stopped_channel_names[:15]:
+            body.append(ui.Stack(direction="h", gap=2, align="center", children=[
+                ui.Badge(label="STOPPED", color="red"),
+                ui.Text(name, variant="body"),
+            ]))
+    else:
+        body.append(ui.Text("Could not load the instance audit.", variant="caption"))
+
+    return ui.Stack(direction="v", gap=3, align="stretch", children=body)
