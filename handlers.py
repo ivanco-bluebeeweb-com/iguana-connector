@@ -205,7 +205,7 @@ async def list_connections(ctx, params: NoParams) -> ActionResult:
     items = [ProviderConnection(id=c.get("id", ""), title=c.get("title", ""), connected=True,
                                  detail=c.get("detail", ""), base_url=c.get("base_url", ""))
              for c in conns]
-    return ActionResult.success(ProviderConnectionList(connections=items))
+    return ActionResult.success(ProviderConnectionList(connections=items), summary="Connections listed.")
 
 
 @chat.function(
@@ -281,7 +281,7 @@ async def list_license_connections(ctx, params: NoParams) -> ActionResult:
     items = [LicensePortalConnection(id=c.get("id", ""), title=c.get("title", ""), connected=True,
                                       detail="my.interfaceware.com")
              for c in conns]
-    return ActionResult.success(LicensePortalConnectionList(connections=items))
+    return ActionResult.success(LicensePortalConnectionList(connections=items), summary="License connections listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -309,7 +309,7 @@ async def list_licenses(ctx, params: ListLicensesParams) -> ActionResult:
         return _fail(exc)
     items = [LicenseEntry(entitlement_id=str(e.get("id", "")), description=str(e.get("description", "")), raw=e)
              for e in (data if isinstance(data, list) else data.get("entitlements", []) if isinstance(data, dict) else [])]
-    return ActionResult.success(LicenseList(licenses=items))
+    return ActionResult.success(LicenseList(licenses=items), summary="Licenses listed.")
 
 
 @chat.function(
@@ -331,7 +331,7 @@ async def get_instance_license_detail(ctx, params: GetInstanceLicenseDetailParam
         data = await ic.get_license_detail(ctx, base_url, username, password)
     except Exception as exc:  # noqa: BLE001
         return _fail(exc)
-    return ActionResult.success(InstanceLicenseDetail(instance_id=str(data.get("instance_id", "")), raw=data))
+    return ActionResult.success(InstanceLicenseDetail(instance_id=str(data.get("instance_id", "")), raw=data), summary="Instance license detail retrieved.")
 
 
 @chat.function(
@@ -384,7 +384,7 @@ async def check_license_activation(ctx, params: CheckLicenseActivationParams) ->
         return _fail(exc)
     return ActionResult.success(
         LicenseActivationResult(activation_id=str(data.get("activation_id", "")), description=str(data.get("description", "")), raw=data)
-    )
+    , summary="Check license activation done.")
 
 
 @chat.function(
@@ -483,7 +483,7 @@ async def get_server_status(ctx, params: GetServerStatusParams) -> ActionResult:
     except Exception as exc:  # noqa: BLE001
         return _fail(exc)
     channels = [_channel_info_from(e) for e in _extract_channels(data)]
-    return ActionResult.success(ServerStatus(channels=channels, raw=data if isinstance(data, dict) else {}))
+    return ActionResult.success(ServerStatus(channels=channels, raw=data if isinstance(data, dict) else {}), summary="Server status retrieved.")
 
 
 @chat.function(
@@ -612,7 +612,7 @@ async def get_current_version(ctx, params: GetCurrentVersionParams) -> ActionRes
     return ActionResult.success(VersionInfo(
         major=str(data.get("major", "")), minor=str(data.get("minor", "")),
         build=str(data.get("build", "")), raw=data if isinstance(data, dict) else {},
-    ))
+    ), summary="Current version retrieved.")
 
 
 @chat.function(
@@ -635,7 +635,7 @@ async def get_server_salt(ctx, params: GetServerSaltParams) -> ActionResult:
     except Exception as exc:  # noqa: BLE001
         return _fail(exc)
     salt = data if isinstance(data, str) else str(data.get("salt", data)) if isinstance(data, dict) else str(data)
-    return ActionResult.success(ServerSalt(salt=salt))
+    return ActionResult.success(ServerSalt(salt=salt), summary="Server salt retrieved.")
 
 
 @chat.function(
@@ -660,7 +660,7 @@ async def get_channel_config(ctx, params: GetChannelConfigParams) -> ActionResul
     except Exception as exc:  # noqa: BLE001
         return _fail(exc)
     config = data if isinstance(data, str) else json.dumps(data)
-    return ActionResult.success(ChannelConfig(name=params.name, guid=params.guid, config_xml=config))
+    return ActionResult.success(ChannelConfig(name=params.name, guid=params.guid, config_xml=config), summary="Channel config retrieved.")
 
 
 @chat.function(
@@ -685,7 +685,7 @@ async def get_default_config(ctx, params: GetDefaultConfigParams) -> ActionResul
     except Exception as exc:  # noqa: BLE001
         return _fail(exc)
     config = data if isinstance(data, str) else json.dumps(data)
-    return ActionResult.success(ChannelConfig(name="", guid="", config_xml=config))
+    return ActionResult.success(ChannelConfig(name="", guid="", config_xml=config), summary="Default config retrieved.")
 
 
 @chat.function(
@@ -801,7 +801,7 @@ async def export_project(ctx, params: ExportProjectParams) -> ActionResult:
     except Exception as exc:  # noqa: BLE001
         return _fail(exc)
     content = data if isinstance(data, str) else str(data)
-    return ActionResult.success(ProjectExport(guid=params.guid, zip_base64=content))
+    return ActionResult.success(ProjectExport(guid=params.guid, zip_base64=content), summary="Export project done.")
 
 
 @chat.function(
@@ -895,7 +895,7 @@ async def query_logs(ctx, params: QueryLogsParams) -> ActionResult:
                          text=str(e.get("text", e.get("message", ""))), raw=e)
                for e in (entries_raw if isinstance(entries_raw, list) else [])]
     raw_xml = data if isinstance(data, str) else ""
-    return ActionResult.success(LogQueryResult(entries=entries, raw_xml=raw_xml))
+    return ActionResult.success(LogQueryResult(entries=entries, raw_xml=raw_xml), summary="Query logs done.")
 
 
 @chat.function(
@@ -917,7 +917,7 @@ async def get_server_config(ctx, params: GetServerConfigParams) -> ActionResult:
     except Exception as exc:  # noqa: BLE001
         return _fail(exc)
     raw_xml = data if isinstance(data, str) else json.dumps(data)
-    return ActionResult.success(ServerConfig(raw_xml=raw_xml))
+    return ActionResult.success(ServerConfig(raw_xml=raw_xml), summary="Server config retrieved.")
 
 
 @chat.function(
@@ -940,7 +940,7 @@ async def get_performance_stats(ctx, params: GetPerformanceStatsParams) -> Actio
     except Exception as exc:  # noqa: BLE001
         return _fail(exc)
     raw_xml = data if isinstance(data, str) else json.dumps(data)
-    return ActionResult.success(PerformanceStats(raw_xml=raw_xml))
+    return ActionResult.success(PerformanceStats(raw_xml=raw_xml), summary="Performance stats retrieved.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -977,4 +977,4 @@ async def audit_iguana_instance(ctx, params: AuditInstanceParams) -> ActionResul
         version=version_str, total_channels=len(channels), stopped_channels=len(stopped),
         stopped_channel_names=stopped, running_channels=len(channels) - len(stopped),
         raw=status_data if isinstance(status_data, dict) else {},
-    ))
+    ), summary="Iguana instance audit ready.")
