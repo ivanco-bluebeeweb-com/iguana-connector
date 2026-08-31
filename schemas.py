@@ -45,6 +45,8 @@ class ProviderConnection(sdl.Entity):
 
 
 class ProviderConnectionList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     connections: list[ProviderConnection] = []
 
 
@@ -53,6 +55,7 @@ class DisconnectIguanaParams(BaseModel):
 
 
 class DeleteResult(sdl.Entity):
+    title: str = ""
     deleted: bool = False
     id: str = ""
 
@@ -84,6 +87,8 @@ class LicensePortalConnection(sdl.Entity):
 
 
 class LicensePortalConnectionList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     connections: list[LicensePortalConnection] = []
 
 
@@ -96,12 +101,16 @@ class ListLicensesParams(LicenseConnectionRefParams):
 
 
 class LicenseEntry(sdl.Entity):
+    id: str = ""
+    title: str = ""
     entitlement_id: str = ""
     description: str = ""
     raw: dict = {}
 
 
 class LicenseList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     licenses: list[LicenseEntry] = []
 
 
@@ -112,6 +121,8 @@ class ActivateLicenseParams(LicenseConnectionRefParams):
 
 
 class LicenseActivationResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     activation_id: str = ""
     description: str = ""
     raw: dict = {}
@@ -132,6 +143,8 @@ class GetInstanceLicenseDetailParams(ConnectionRefParams):
 
 
 class InstanceLicenseDetail(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instance_id: str = ""
     raw: dict = {}
 
@@ -155,6 +168,8 @@ class GetServerStatusParams(ConnectionRefParams):
 
 
 class ChannelInfo(sdl.Entity):
+    id: str = ""
+    title: str = ""
     name: str = ""
     guid: str = ""
     status: str = ""
@@ -162,6 +177,8 @@ class ChannelInfo(sdl.Entity):
 
 
 class ServerStatus(sdl.Entity):
+    id: str = ""
+    title: str = ""
     number_of_channels: int = 0
     channels: list[ChannelInfo] = []
     raw: dict = {}
@@ -184,6 +201,8 @@ class StopAllChannelsParams(ConnectionRefParams):
 
 
 class VersionInfo(sdl.Entity):
+    id: str = ""
+    title: str = ""
     major: int = 0
     minor: int = 0
     build: int = 0
@@ -200,6 +219,8 @@ class GetServerSaltParams(ConnectionRefParams):
 
 
 class ServerSalt(sdl.Entity):
+    id: str = ""
+    title: str = ""
     salt: str = ""
 
 
@@ -208,6 +229,8 @@ class GetChannelConfigParams(ChannelRefParams):
 
 
 class ChannelConfig(sdl.Entity):
+    id: str = ""
+    title: str = ""
     name: str = ""
     guid: str = ""
     config_xml: str = ""
@@ -251,6 +274,8 @@ class ExportProjectParams(ConnectionRefParams):
 
 
 class ProjectExport(sdl.Entity):
+    id: str = ""
+    title: str = ""
     guid: str = ""
     zip_base64: str = ""
 
@@ -262,6 +287,8 @@ class ImportProjectParams(ConnectionRefParams):
 
 
 class ImportProjectResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     guid: str = ""
     imported: bool = False
     raw: dict = {}
@@ -273,6 +300,8 @@ class SaveProjectMilestoneParams(ConnectionRefParams):
 
 
 class MilestoneResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     guid: str = ""
     milestone_name: str = ""
     saved: bool = False
@@ -301,6 +330,8 @@ class QueryLogsParams(ConnectionRefParams):
 
 
 class LogEntry(sdl.Entity):
+    id: str = ""
+    title: str = ""
     message_id: str = ""
     channel: str = ""
     type: str = ""
@@ -310,6 +341,8 @@ class LogEntry(sdl.Entity):
 
 
 class LogQueryResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     entries: list[LogEntry] = []
     raw_xml: str = ""
 
@@ -319,6 +352,8 @@ class GetServerConfigParams(ConnectionRefParams):
 
 
 class ServerConfig(sdl.Entity):
+    id: str = ""
+    title: str = ""
     raw_xml: str = ""
 
 
@@ -327,6 +362,8 @@ class GetPerformanceStatsParams(ConnectionRefParams):
 
 
 class PerformanceStats(sdl.Entity):
+    id: str = ""
+    title: str = ""
     raw_xml: str = ""
 
 
@@ -340,6 +377,8 @@ class AuditInstanceParams(ConnectionRefParams):
 
 
 class IguanaAuditReport(sdl.Entity):
+    id: str = ""
+    title: str = ""
     version: str = ""
     total_channels: int = 0
     stopped_channels: int = 0
